@@ -8,6 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Length } from 'class-validator';
 
 @Entity('posts')
 export class Post {
@@ -15,6 +16,7 @@ export class Post {
   id: string;
 
   @Column()
+  @Length(2, 70)
   title: string;
 
   @Column()

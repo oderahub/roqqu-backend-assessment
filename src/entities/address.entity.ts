@@ -8,6 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Length } from 'class-validator';
 
 @Entity('addresses')
 export class Address {
@@ -15,15 +16,19 @@ export class Address {
   id: string;
 
   @Column()
+  @Length(2, 50)
   street: string;
 
   @Column()
+  @Length(2, 50)
   city: string;
 
   @Column()
+  @Length(2, 50)
   state: string;
 
   @Column()
+  @Length(2, 50)
   country: string;
 
   @Column()
