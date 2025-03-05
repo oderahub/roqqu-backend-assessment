@@ -17,13 +17,16 @@ export const createUserSchema = Joi.object({
     'string.email': 'Invalid email format',
     'any.required': 'Email is required',
   }),
-  phoneNumber: Joi.string()
-    .pattern(/^\+?[0-9]{10,15}$/)
-    .allow(null, '')
-    .messages({
-      'string.pattern.base':
-        'Phone number must be 10-15 digits and can start with + for international format',
-    }),
+  phoneNumber: Joi.alternatives().try(
+    Joi.string()
+      .pattern(/^\+?[0-9]{10,15}$/)
+      .allow(null, '')
+      .messages({
+        'string.pattern.base':
+          'Phone number must be 10-15 digits and can start with + for international format',
+      }),
+    Joi.number(),
+  ),
 });
 
 export const updateUserSchema = Joi.object({
@@ -40,11 +43,21 @@ export const updateUserSchema = Joi.object({
   email: Joi.string().email().messages({
     'string.email': 'Invalid email format',
   }),
-  phoneNumber: Joi.string()
-    .pattern(/^\+?[0-9]{10,15}$/)
-    .allow(null, '')
-    .messages({
-      'string.pattern.base':
-        'Phone number must be 10-15 digits and can start with + for international format',
-    }),
+  phoneNumber: Joi.alternatives().try(
+    Joi.string()
+      .pattern(/^\+?[0-9]{10,15}$/)
+      .allow(null, '')
+      .messages({
+        'string.pattern.base':
+          'Phone number must be 10-15 digits and can start with + for international format',
+      }),
+    Joi.number(),
+  ),
 }).min(1);
+
+export const userIdSchema = Joi.object({
+  id: Joi.string().guid({ version: 'uuidv4' }).required().messages({
+    'string.guid': 'Invalid user ID format',
+    'any.required': 'User ID is required',
+  }),
+});

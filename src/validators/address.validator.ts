@@ -1,11 +1,6 @@
 import Joi from 'joi';
 
 export const createAddressSchema = Joi.object({
-  userId: Joi.string().uuid({ version: 'uuidv4' }).required().messages({
-    'string.empty': 'User ID is required',
-    'string.guid': 'Invalid User ID format',
-    'any.required': 'User ID is required',
-  }),
   street: Joi.string().trim().min(2).max(100).required().messages({
     'string.empty': 'Street is required',
     'string.min': 'Street must be at least 2 characters long',
@@ -30,12 +25,17 @@ export const createAddressSchema = Joi.object({
     'string.max': 'Country must be at most 50 characters long',
     'any.required': 'Country is required',
   }),
-  zipCode: Joi.string()
-    .pattern(/^\d{4,10}$/) // Ensure zipCode is only numbers (4-10 digits)
+  zipCode: Joi.alternatives()
+    .try(
+      Joi.string()
+        .pattern(/^\d{4,10}$/)
+        .messages({
+          'string.pattern.base': 'Zip Code must be a number with 4-10 digits',
+        }),
+      Joi.number().min(1000).max(9999999999), // Allow number format
+    )
     .required()
     .messages({
-      'string.empty': 'Zip Code is required',
-      'string.pattern.base': 'Zip Code must be a number with 4-10 digits',
       'any.required': 'Zip Code is required',
     }),
 });
@@ -57,9 +57,19 @@ export const updateAddressSchema = Joi.object({
     'string.min': 'Country must be at least 2 characters long',
     'string.max': 'Country must be at most 50 characters long',
   }),
-  zipCode: Joi.string()
-    .pattern(/^\d{4,10}$/)
-    .messages({
-      'string.pattern.base': 'Zip Code must be a number with 4-10 digits',
-    }),
+  zipCode: Joi.alternatives().try(
+    Joi.string()
+      .pattern(/^\d{4,10}$/)
+      .messages({
+        'string.pattern.base': 'Zip Code must be a number with 4-10 digits',
+      }),
+    Joi.number().min(1000).max(9999999999),
+  ),
 }).min(1);
+
+export const addressIdSchema = Joi.object({
+  userId: Joi.string().guid({ version: 'uuidv4' }).required().messages({
+    'string.guid': 'Invalid User ID format',
+    'any.required': 'User ID is required',
+  }),
+});
