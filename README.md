@@ -176,8 +176,7 @@ A user management system built with TypeScript, Node.js, TypeORM, and SQLite, fe
 
 ### Postman Documentation
 
-- **URL**: [Link to be added after publishing]
-  [text](https://okere7.postman.co/workspace/okere-Workspace~3dea8179-4b8b-4bbc-bfed-980a16e2fb53/collection/31300428-ba01f3d4-c0df-434e-b401-93f265c81422?action=share&creator=31300428&active-environment=31300428-13353c5d-e19b-4081-9530-94b9a77ba216)
+- **URL**: [text](https://documenter.getpostman.com/view/31300428/2sAYdkJUnY)
 
 ## Deployment
 

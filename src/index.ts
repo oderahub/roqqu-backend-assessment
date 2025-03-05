@@ -14,6 +14,8 @@ import { logger } from './utils/logger';
 import * as dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
+import https from 'https';
+import cron from 'node-cron';
 
 dotenv.config();
 
@@ -70,5 +72,21 @@ if (require.main === module) {
       process.exit(1);
     });
 }
+
+function keepAlive(url: string) {
+  https
+    .get(url, (res) => {
+      logger.info(`Status: ${res.statusCode}`);
+    })
+    .on('error', (error) => {
+      console.error(`Error: ${error.message}`);
+    });
+}
+
+// Schedule a job to keep the server alive
+cron.schedule('*/5 * * * *', () => {
+  keepAlive('https://roqqu-backend-assessment-wnmd.onrender.com/');
+  logger.info('Pinged the server every 5 minutes');
+});
 
 export default app;
