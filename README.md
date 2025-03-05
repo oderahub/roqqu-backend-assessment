@@ -169,7 +169,7 @@ A user management system built with TypeScript, Node.js, TypeORM, and SQLite, fe
 
 ### Swagger UI
 
-- **URL**: http://localhost:3000/api-docs
+- **URL**: https://roqqu-backend-assessment-wnmd.onrender.com/api-docs || http://localhost:3000/api-docs
 - **Authentication**:
   1. Use POST `/auth/login` to get a token
   2. Click "Authorize" and enter `Bearer <token>`
@@ -177,7 +177,8 @@ A user management system built with TypeScript, Node.js, TypeORM, and SQLite, fe
 ### Postman Documentation
 
 - **URL**: [Link to be added after publishing]
+  [text](https://okere7.postman.co/workspace/okere-Workspace~3dea8179-4b8b-4bbc-bfed-980a16e2fb53/collection/31300428-ba01f3d4-c0df-434e-b401-93f265c81422?action=share&creator=31300428&active-environment=31300428-13353c5d-e19b-4081-9530-94b9a77ba216)
 
 ## Deployment
 
-- **Live API URL**: [Link to be added after deployment]
+- **Live API URL**: (https://roqqu-backend-assessment-wnmd.onrender.com/)
