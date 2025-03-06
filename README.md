@@ -167,6 +167,11 @@ A user management system built with TypeScript, Node.js, TypeORM, and SQLite, fe
 
 ## Documentation
 
+## Design Decisions
+
+Dynamic userId for Posts:
+The assessment specifies that POST /posts should accept title, body, and userId in the request body. This implementation deviates by dynamically deriving userId from the authenticated JWT token (req.user.id) instead of requiring it as input. This choice enhances security by ensuring users can only create posts for themselves, preventing unauthorized userId spoofing. If the intent was to allow explicit userId input (e.g., for admin use cases), this can be adjusted upon request.
+
 ### Swagger UI
 
 - **URL**: https://roqqu-backend-assessment-wnmd.onrender.com/api-docs || http://localhost:3000/api-docs
