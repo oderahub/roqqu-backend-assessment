@@ -17,7 +17,7 @@ A user management system built with TypeScript, Node.js, TypeORM, and SQLite, fe
 1. **Clone the Repository**:
 
    ```bash
-   git clone <repository-url>
+   git clone [text](https://github.com/oderahub/roqqu-backend-assessment)
    cd roqqu-backend-assessment
    ```
 
