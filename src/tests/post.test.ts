@@ -2,8 +2,6 @@ import { describe, it, beforeAll, afterAll, expect } from '@jest/globals';
 import supertest from 'supertest';
 import { AppDataSource } from '../config/database';
 import app from '../index';
-import { User } from '../entities/user.entity';
-import jwt from 'jsonwebtoken';
 import { ERROR_MESSAGES } from '../constants/error.constants';
 
 describe('Post API', () => {
@@ -16,31 +14,53 @@ describe('Post API', () => {
 
   beforeAll(async () => {
     await AppDataSource.initialize();
+    // Clear all tables for isolation
+    await AppDataSource.query('DELETE FROM posts');
+    await AppDataSource.query('DELETE FROM addresses');
+    await AppDataSource.query('DELETE FROM users');
 
-    // Create User 1 (John)
-    const user1 = await AppDataSource.getRepository(User).save({
+    // Create User 1 (John) via API
+    const createJohn = await supertest(app).post('/users').send({
       firstName: 'John',
       lastName: 'Doe',
       email: 'john.doe@example.com',
     });
-    userId1 = user1.id;
-    token1 = jwt.sign({ id: userId1 }, process.env.JWT_SECRET || 'your-secret-key', {
-      expiresIn: '1h',
-    });
+    expect(createJohn.status).toBe(201);
+    userId1 = createJohn.body.data.id;
+    console.log('John created:', userId1); // Debug
 
-    // Create User 2 (Jane)
-    const user2 = await AppDataSource.getRepository(User).save({
+    // Login John
+    const loginJohn = await supertest(app)
+      .post('/auth/login')
+      .send({ email: 'john.doe@example.com' });
+    expect(loginJohn.status).toBe(200);
+    token1 = loginJohn.body.data.token;
+    console.log('John token:', token1); // Debug
+
+    // Create User 2 (Jane) via API
+    const createJane = await supertest(app).post('/users').send({
       firstName: 'Jane',
       lastName: 'Smith',
       email: 'jane.smith@example.com',
     });
-    userId2 = user2.id;
-    token2 = jwt.sign({ id: userId2 }, process.env.JWT_SECRET || 'your-secret-key', {
-      expiresIn: '1h',
-    });
+    expect(createJane.status).toBe(201);
+    userId2 = createJane.body.data.id;
+    console.log('Jane created:', userId2); // Debug
+
+    // Login Jane
+    const loginJane = await supertest(app)
+      .post('/auth/login')
+      .send({ email: 'jane.smith@example.com' });
+    expect(loginJane.status).toBe(200);
+    token2 = loginJane.body.data.token;
+    console.log('Jane token:', token2); // Debug
   });
 
   afterAll(async () => {
+    // Clear all tables
+    await AppDataSource.query('DELETE FROM posts');
+    await AppDataSource.query('DELETE FROM addresses');
+    await AppDataSource.query('DELETE FROM users');
     await AppDataSource.destroy();
   });
 
@@ -56,6 +76,7 @@ describe('Post API', () => {
     expect(response.body.status).toBe('success');
     expect(response.body.data.userId).toBe(userId1);
     postId1 = response.body.data.id;
+    console.log('John post ID:', postId1); // Debug
   });
 
   it('should create a post for Jane', async () => {
@@ -70,6 +91,7 @@ describe('Post API', () => {
     expect(response.body.status).toBe('success');
     expect(response.body.data.userId).toBe(userId2);
     postId2 = response.body.data.id;
+    console.log('Jane post ID:', postId2); // Debug
   });
 
   it('should fail to create post without authentication', async () => {
