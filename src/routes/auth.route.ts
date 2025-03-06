@@ -8,7 +8,7 @@ const authController = new AuthController();
  * @swagger
  * /auth/login:
  *   post:
- *     summary: Login a user and return a JWT token
+ *     summary: Authenticate a user and obtain a JWT token
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -23,9 +23,10 @@ const authController = new AuthController();
  *                 type: string
  *                 format: email
  *                 example: john.doe@example.com
+ *                 description: User's registered email address
  *     responses:
  *       200:
- *         description: Successful login
+ *         description: Successfully authenticated
  *         content:
  *           application/json:
  *             schema:
@@ -40,6 +41,7 @@ const authController = new AuthController();
  *                     token:
  *                       type: string
  *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                       description: JWT token for authenticated requests
  *       404:
  *         description: User not found
  *         content:
@@ -56,6 +58,10 @@ const authController = new AuthController();
  *                 message:
  *                   type: string
  *                   example: User not found
+ *       400:
+ *         description: Invalid email format
+ *       429:
+ *         description: Too many requests
  */
 router.post('/login', authController.login);
 

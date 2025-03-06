@@ -25,10 +25,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(
   cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    origin: ['http://localhost:3000', 'https://roqqu-backend-assessment-wnmd.onrender.com'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
   }),
 );
 app.use(express.json());
@@ -41,6 +40,11 @@ app.disable('x-powered-by');
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'success', message: 'Server is running' });
 });
+
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'success', message: 'Welcome to Roqqu API' });
+});
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/auth', authRoutes);

@@ -16,8 +16,8 @@ const addressController = new AddressController();
  * @swagger
  * /addresses/{userId}:
  *   get:
- *     summary: Get an address by user ID
- *     tags: [Addresses]
+ *     summary: Retrieve an address by user ID
+ *     tags: [Public Addresses]
  *     parameters:
  *       - in: path
  *         name: userId
@@ -25,10 +25,10 @@ const addressController = new AddressController();
  *         schema:
  *           type: string
  *           format: uuid
- *         description: User ID
+ *         description: Unique identifier of the user
  *     responses:
  *       200:
- *         description: Address details
+ *         description: Successfully retrieved address
  *         content:
  *           application/json:
  *             schema:
@@ -40,7 +40,9 @@ const addressController = new AddressController();
  *                 data:
  *                   $ref: '#/components/schemas/Address'
  *       404:
- *         description: Address not found
+ *         description: Address or user not found
+ *       400:
+ *         description: Invalid user ID format
  */
 router.get(
   ROUTES.ADDRESS.BY_USER_ID,
@@ -53,7 +55,7 @@ router.get(
  * /addresses:
  *   post:
  *     summary: Create an address for the authenticated user
- *     tags: [Addresses]
+ *     tags: [Authenticated Addresses]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -64,7 +66,7 @@ router.get(
  *             $ref: '#/components/schemas/CreateAddress'
  *     responses:
  *       201:
- *         description: Address created
+ *         description: Address successfully created
  *         content:
  *           application/json:
  *             schema:
@@ -78,7 +80,9 @@ router.get(
  *       400:
  *         description: Invalid input or user already has an address
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - JWT token required
+ *       429:
+ *         description: Too many requests
  */
 router.post(
   ROUTES.ADDRESS.BASE,
@@ -91,8 +95,8 @@ router.post(
  * @swagger
  * /addresses/{userId}:
  *   patch:
- *     summary: Update an address
- *     tags: [Addresses]
+ *     summary: Update an address for the authenticated user
+ *     tags: [Authenticated Addresses]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -102,7 +106,7 @@ router.post(
  *         schema:
  *           type: string
  *           format: uuid
- *         description: User ID
+ *         description: Unique identifier of the user
  *     requestBody:
  *       required: true
  *       content:
@@ -111,7 +115,7 @@ router.post(
  *             $ref: '#/components/schemas/UpdateAddress'
  *     responses:
  *       200:
- *         description: Address updated
+ *         description: Address successfully updated
  *         content:
  *           application/json:
  *             schema:
@@ -123,9 +127,13 @@ router.post(
  *                 data:
  *                   $ref: '#/components/schemas/Address'
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - JWT token required
  *       404:
- *         description: Address not found
+ *         description: Address or user not found
+ *       400:
+ *         description: Invalid input or ID format
+ *       429:
+ *         description: Too many requests
  */
 router.patch(
   ROUTES.ADDRESS.BY_USER_ID,
@@ -139,8 +147,8 @@ router.patch(
  * @swagger
  * /addresses/{userId}:
  *   delete:
- *     summary: Delete an address
- *     tags: [Addresses]
+ *     summary: Delete an address for the authenticated user
+ *     tags: [Authenticated Addresses]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -150,14 +158,18 @@ router.patch(
  *         schema:
  *           type: string
  *           format: uuid
- *         description: User ID
+ *         description: Unique identifier of the user
  *     responses:
  *       204:
- *         description: Address deleted
+ *         description: Address successfully deleted
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - JWT token required
  *       404:
- *         description: Address not found
+ *         description: Address or user not found
+ *       400:
+ *         description: Invalid user ID format
+ *       429:
+ *         description: Too many requests
  */
 router.delete(
   ROUTES.ADDRESS.BY_USER_ID,

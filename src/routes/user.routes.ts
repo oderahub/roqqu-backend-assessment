@@ -12,8 +12,8 @@ const userController = new UserController();
  * @swagger
  * /users:
  *   get:
- *     summary: Get a paginated list of users
- *     tags: [Users]
+ *     summary: Retrieve a paginated list of users
+ *     tags: [Public Users]
  *     parameters:
  *       - in: query
  *         name: pageNumber
@@ -29,7 +29,7 @@ const userController = new UserController();
  *         description: Number of users per page
  *     responses:
  *       200:
- *         description: List of users
+ *         description: Successfully retrieved users
  *         content:
  *           application/json:
  *             schema:
@@ -51,6 +51,8 @@ const userController = new UserController();
  *                     pageSize:
  *                       type: integer
  *                       example: 10
+ *       400:
+ *         description: Invalid query parameters
  */
 router.get(ROUTES.USER.BASE, userController.getUsers);
 
@@ -58,11 +60,11 @@ router.get(ROUTES.USER.BASE, userController.getUsers);
  * @swagger
  * /users/count:
  *   get:
- *     summary: Get the total number of users
- *     tags: [Users]
+ *     summary: Get the total count of users
+ *     tags: [Public Users]
  *     responses:
  *       200:
- *         description: User count
+ *         description: Successfully retrieved user count
  *         content:
  *           application/json:
  *             schema:
@@ -84,8 +86,8 @@ router.get(ROUTES.USER.COUNT, userController.getUserCount);
  * @swagger
  * /users/{id}:
  *   get:
- *     summary: Get a user by ID
- *     tags: [Users]
+ *     summary: Retrieve a user by ID
+ *     tags: [Public Users]
  *     parameters:
  *       - in: path
  *         name: id
@@ -93,10 +95,10 @@ router.get(ROUTES.USER.COUNT, userController.getUserCount);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: User ID
+ *         description: Unique identifier of the user
  *     responses:
  *       200:
- *         description: User details
+ *         description: Successfully retrieved user
  *         content:
  *           application/json:
  *             schema:
@@ -109,6 +111,8 @@ router.get(ROUTES.USER.COUNT, userController.getUserCount);
  *                   $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
+ *       400:
+ *         description: Invalid user ID format
  */
 router.get(ROUTES.USER.BY_ID, validate(userIdSchema, 'params'), userController.getUserById);
 
@@ -117,7 +121,7 @@ router.get(ROUTES.USER.BY_ID, validate(userIdSchema, 'params'), userController.g
  * /users:
  *   post:
  *     summary: Create a new user
- *     tags: [Users]
+ *     tags: [Public Users]
  *     requestBody:
  *       required: true
  *       content:
@@ -126,7 +130,7 @@ router.get(ROUTES.USER.BY_ID, validate(userIdSchema, 'params'), userController.g
  *             $ref: '#/components/schemas/CreateUser'
  *     responses:
  *       201:
- *         description: User created
+ *         description: User successfully created
  *         content:
  *           application/json:
  *             schema:
@@ -138,7 +142,9 @@ router.get(ROUTES.USER.BY_ID, validate(userIdSchema, 'params'), userController.g
  *                 data:
  *                   $ref: '#/components/schemas/User'
  *       400:
- *         description: Invalid input or duplicate email
+ *         description: Invalid input or email already exists
+ *       429:
+ *         description: Too many requests
  */
 router.post(ROUTES.USER.BASE, validate(createUserSchema), userController.createUser);
 
@@ -146,8 +152,8 @@ router.post(ROUTES.USER.BASE, validate(createUserSchema), userController.createU
  * @swagger
  * /users/{id}:
  *   patch:
- *     summary: Update a user
- *     tags: [Users]
+ *     summary: Update an existing user
+ *     tags: [Authenticated Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -157,7 +163,7 @@ router.post(ROUTES.USER.BASE, validate(createUserSchema), userController.createU
  *         schema:
  *           type: string
  *           format: uuid
- *         description: User ID
+ *         description: Unique identifier of the user
  *     requestBody:
  *       required: true
  *       content:
@@ -166,7 +172,7 @@ router.post(ROUTES.USER.BASE, validate(createUserSchema), userController.createU
  *             $ref: '#/components/schemas/UpdateUser'
  *     responses:
  *       200:
- *         description: User updated
+ *         description: User successfully updated
  *         content:
  *           application/json:
  *             schema:
@@ -178,9 +184,13 @@ router.post(ROUTES.USER.BASE, validate(createUserSchema), userController.createU
  *                 data:
  *                   $ref: '#/components/schemas/User'
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - JWT token required
  *       404:
  *         description: User not found
+ *       400:
+ *         description: Invalid input or ID format
+ *       429:
+ *         description: Too many requests
  */
 router.patch(
   ROUTES.USER.BY_ID,
@@ -195,7 +205,7 @@ router.patch(
  * /users/{id}:
  *   delete:
  *     summary: Delete a user
- *     tags: [Users]
+ *     tags: [Authenticated Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -205,14 +215,18 @@ router.patch(
  *         schema:
  *           type: string
  *           format: uuid
- *         description: User ID
+ *         description: Unique identifier of the user
  *     responses:
  *       204:
- *         description: User deleted
+ *         description: User successfully deleted
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - JWT token required
  *       404:
  *         description: User not found
+ *       400:
+ *         description: Invalid user ID format
+ *       429:
+ *         description: Too many requests
  */
 router.delete(
   ROUTES.USER.BY_ID,

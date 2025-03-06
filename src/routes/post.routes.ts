@@ -12,8 +12,8 @@ const postController = new PostController();
  * @swagger
  * /posts:
  *   get:
- *     summary: Get posts by user ID
- *     tags: [Posts]
+ *     summary: Retrieve posts by user ID
+ *     tags: [Public Posts]
  *     parameters:
  *       - in: query
  *         name: userId
@@ -21,10 +21,10 @@ const postController = new PostController();
  *         schema:
  *           type: string
  *           format: uuid
- *         description: User ID
+ *         description: Unique identifier of the user
  *     responses:
  *       200:
- *         description: List of posts
+ *         description: Successfully retrieved posts
  *         content:
  *           application/json:
  *             schema:
@@ -37,6 +37,8 @@ const postController = new PostController();
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Post'
+ *       400:
+ *         description: Missing or invalid userId
  */
 router.get(ROUTES.POST.BASE, postController.getPostsByUserId);
 
@@ -44,8 +46,8 @@ router.get(ROUTES.POST.BASE, postController.getPostsByUserId);
  * @swagger
  * /posts/{id}:
  *   get:
- *     summary: Get a post by ID
- *     tags: [Posts]
+ *     summary: Retrieve a post by ID
+ *     tags: [Public Posts]
  *     parameters:
  *       - in: path
  *         name: id
@@ -53,10 +55,10 @@ router.get(ROUTES.POST.BASE, postController.getPostsByUserId);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Post ID
+ *         description: Unique identifier of the post
  *     responses:
  *       200:
- *         description: Post details
+ *         description: Successfully retrieved post
  *         content:
  *           application/json:
  *             schema:
@@ -69,6 +71,8 @@ router.get(ROUTES.POST.BASE, postController.getPostsByUserId);
  *                   $ref: '#/components/schemas/Post'
  *       404:
  *         description: Post not found
+ *       400:
+ *         description: Invalid post ID format
  */
 router.get(ROUTES.POST.BY_ID, validate(postIdSchema, 'params'), postController.getPostById);
 
@@ -76,8 +80,8 @@ router.get(ROUTES.POST.BY_ID, validate(postIdSchema, 'params'), postController.g
  * @swagger
  * /posts:
  *   post:
- *     summary: Create a post for the authenticated user
- *     tags: [Posts]
+ *     summary: Create a new post for the authenticated user
+ *     tags: [Authenticated Posts]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -88,7 +92,7 @@ router.get(ROUTES.POST.BY_ID, validate(postIdSchema, 'params'), postController.g
  *             $ref: '#/components/schemas/CreatePost'
  *     responses:
  *       201:
- *         description: Post created
+ *         description: Post successfully created
  *         content:
  *           application/json:
  *             schema:
@@ -100,9 +104,11 @@ router.get(ROUTES.POST.BY_ID, validate(postIdSchema, 'params'), postController.g
  *                 data:
  *                   $ref: '#/components/schemas/Post'
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - JWT token required
  *       400:
  *         description: Invalid input
+ *       429:
+ *         description: Too many requests
  */
 router.post(
   ROUTES.POST.BASE,
@@ -115,8 +121,8 @@ router.post(
  * @swagger
  * /posts/{id}:
  *   patch:
- *     summary: Update a post
- *     tags: [Posts]
+ *     summary: Update an existing post
+ *     tags: [Authenticated Posts]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -126,7 +132,7 @@ router.post(
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Post ID
+ *         description: Unique identifier of the post
  *     requestBody:
  *       required: true
  *       content:
@@ -135,7 +141,7 @@ router.post(
  *             $ref: '#/components/schemas/UpdatePost'
  *     responses:
  *       200:
- *         description: Post updated
+ *         description: Post successfully updated
  *         content:
  *           application/json:
  *             schema:
@@ -147,9 +153,13 @@ router.post(
  *                 data:
  *                   $ref: '#/components/schemas/Post'
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - JWT token required
  *       404:
  *         description: Post not found
+ *       400:
+ *         description: Invalid input or ID format
+ *       429:
+ *         description: Too many requests
  */
 router.patch(
   ROUTES.POST.BY_ID,
@@ -164,7 +174,7 @@ router.patch(
  * /posts/{id}:
  *   delete:
  *     summary: Delete a post
- *     tags: [Posts]
+ *     tags: [Authenticated Posts]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -174,16 +184,20 @@ router.patch(
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Post ID
+ *         description: Unique identifier of the post
  *     responses:
  *       204:
- *         description: Post deleted
+ *         description: Post successfully deleted
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - JWT token required
  *       403:
- *         description: Forbidden (not the owner)
+ *         description: Forbidden - User is not the post owner
  *       404:
  *         description: Post not found
+ *       400:
+ *         description: Invalid post ID format
+ *       429:
+ *         description: Too many requests
  */
 router.delete(
   ROUTES.POST.BY_ID,
