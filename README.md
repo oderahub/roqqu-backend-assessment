@@ -181,7 +181,7 @@ The assessment specifies that POST /posts should accept title, body, and userId 
 
 ### Postman Documentation
 
-- **URL**: [text](https://documenter.getpostman.com/view/31300428/2sAYdkJUnY)
+- **URL**: https://documenter.getpostman.com/view/31300428/2sAYdkJUnY
 
 ## Deployment
 
